@@ -1,0 +1,17 @@
+@if (!familyData) {
+  <app-file-upload (fileUploaded)="onFileUploaded($event)" />
+} @else {
+  <app-family-tree-viewer
+    [data]="familyData"
+    (personSelected)="onPersonSelected($event)"
+  />
+
+  @if (selectedPerson) {
+    <app-person-detail-panel
+      [person]="selectedPerson"
+      [data]="familyData"
+      (closed)="closeDetailPanel()"
+      (navigateTo)="onNavigateToPerson($event)"
+    />
+  }
+}

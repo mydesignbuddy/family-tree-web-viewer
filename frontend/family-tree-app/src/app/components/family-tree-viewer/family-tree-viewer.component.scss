@@ -1,0 +1,125 @@
+.viewer-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #f5f5f0;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  background: #fff;
+  border-bottom: 1px solid #e0ddd5;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  z-index: 10;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.new-file-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.75rem;
+  background: #f5f5f0;
+  border: 1px solid #d5d2ca;
+  border-radius: 6px;
+  color: #5a6c7d;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #eae8e2;
+    color: #2c3e50;
+  }
+}
+
+.person-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+
+  label {
+    font-size: 0.8rem;
+    color: #7f8c8d;
+    font-weight: 500;
+  }
+
+  select {
+    padding: 0.35rem 0.5rem;
+    border: 1px solid #d5d2ca;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    color: #2c3e50;
+    background: #fff;
+    max-width: 200px;
+    cursor: pointer;
+
+    &:focus {
+      outline: none;
+      border-color: #2a7d3f;
+    }
+  }
+}
+
+.view-mode-switcher {
+  display: flex;
+  background: #f5f5f0;
+  border-radius: 8px;
+  padding: 3px;
+  border: 1px solid #e0ddd5;
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.85rem;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: #7f8c8d;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+
+    &:hover {
+      color: #2c3e50;
+    }
+
+    &.active {
+      background: #fff;
+      color: #2a7d3f;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      font-weight: 600;
+    }
+  }
+}
+
+.toolbar-right {
+  .person-indicator {
+    font-size: 0.8rem;
+    color: #7f8c8d;
+
+    strong {
+      color: #2c3e50;
+    }
+  }
+}
+
+.visualization-area {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}

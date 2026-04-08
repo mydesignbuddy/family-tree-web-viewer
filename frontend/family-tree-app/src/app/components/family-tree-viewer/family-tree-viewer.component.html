@@ -1,0 +1,97 @@
+<div class="viewer-container">
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <button class="new-file-btn" (click)="onNewFileClick()" title="Upload new file">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="17,8 12,3 7,8"/>
+          <line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+        New File
+      </button>
+      <div class="person-selector">
+        <label>Root:</label>
+        <select [value]="selectedPersonId" (change)="selectPerson($any($event.target).value)">
+          @for (person of individualsList; track person.id) {
+            <option [value]="person.id">{{ person.firstName }} {{ person.lastName }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <div class="view-mode-switcher">
+      <button
+        [class.active]="viewMode === 'pedigree'"
+        (click)="setViewMode('pedigree')"
+      >
+        <svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor">
+          <rect x="1" y="8" width="6" height="4" rx="1"/>
+          <rect x="13" y="2" width="6" height="4" rx="1"/>
+          <rect x="13" y="14" width="6" height="4" rx="1"/>
+          <path d="M7 10h3v-6h3M10 10v6h3" stroke="currentColor" stroke-width="1.2" fill="none"/>
+        </svg>
+        Pedigree
+      </button>
+      <button
+        [class.active]="viewMode === 'descendant'"
+        (click)="setViewMode('descendant')"
+      >
+        <svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor">
+          <rect x="7" y="1" width="6" height="4" rx="1"/>
+          <rect x="1" y="15" width="5" height="4" rx="1"/>
+          <rect x="7.5" y="15" width="5" height="4" rx="1"/>
+          <rect x="14" y="15" width="5" height="4" rx="1"/>
+          <path d="M10 5v4M4 12v3M10 12v3M16 12v3M4 12h12" stroke="currentColor" stroke-width="1.2" fill="none"/>
+        </svg>
+        Descendant
+      </button>
+      <button
+        [class.active]="viewMode === 'fan'"
+        (click)="setViewMode('fan')"
+      >
+        <svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor">
+          <path d="M10 18 A8 8 0 0 1 2 10" stroke="currentColor" stroke-width="1.5" fill="none"/>
+          <path d="M10 18 A8 8 0 0 0 18 10" stroke="currentColor" stroke-width="1.5" fill="none"/>
+          <path d="M10 18 A5 5 0 0 1 5 13" stroke="currentColor" stroke-width="1.5" fill="none"/>
+          <path d="M10 18 A5 5 0 0 0 15 13" stroke="currentColor" stroke-width="1.5" fill="none"/>
+          <circle cx="10" cy="18" r="2"/>
+        </svg>
+        Fan Chart
+      </button>
+    </div>
+
+    <div class="toolbar-right">
+      <span class="person-indicator" *ngIf="selectedPerson">
+        Viewing: <strong>{{ selectedPersonName }}</strong>
+      </span>
+    </div>
+  </div>
+
+  <!-- Visualization Area -->
+  <div class="visualization-area">
+    @switch (viewMode) {
+      @case ('pedigree') {
+        <app-pedigree-tree
+          [data]="data"
+          [rootPersonId]="selectedPersonId"
+          (personClicked)="onPersonClicked($event)"
+        />
+      }
+      @case ('descendant') {
+        <app-descendant-tree
+          [data]="data"
+          [rootPersonId]="selectedPersonId"
+          (personClicked)="onPersonClicked($event)"
+        />
+      }
+      @case ('fan') {
+        <app-fan-chart
+          [data]="data"
+          [rootPersonId]="selectedPersonId"
+          (personClicked)="onPersonClicked($event)"
+        />
+      }
+    }
+  </div>
+</div>

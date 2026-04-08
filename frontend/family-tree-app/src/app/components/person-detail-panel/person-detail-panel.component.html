@@ -1,0 +1,103 @@
+<div class="panel-overlay" (click)="closed.emit()"></div>
+<div class="detail-panel">
+  <div class="panel-header">
+    <div class="person-identity">
+      <div class="avatar" [class.male]="person.sex === 'M'" [class.female]="person.sex === 'F'">
+        {{ person.firstName.charAt(0) || '?' }}{{ person.lastName.charAt(0) || '' }}
+      </div>
+      <div>
+        <h2>{{ treeDataService.getDisplayName(person) }}</h2>
+        <span class="lifespan">{{ treeDataService.getLifespan(person) }}</span>
+      </div>
+    </div>
+    <button class="close-btn" (click)="closed.emit()">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="panel-body">
+    <!-- Birth -->
+    <div class="detail-section" *ngIf="person.birthDate || person.birthPlace">
+      <h3>Birth</h3>
+      <p *ngIf="person.birthDate" class="detail-item">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        {{ person.birthDate }}
+      </p>
+      <p *ngIf="person.birthPlace" class="detail-item">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+        </svg>
+        {{ person.birthPlace }}
+      </p>
+    </div>
+
+    <!-- Death -->
+    <div class="detail-section" *ngIf="person.deathDate || person.deathPlace">
+      <h3>Death</h3>
+      <p *ngIf="person.deathDate" class="detail-item">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        {{ person.deathDate }}
+      </p>
+      <p *ngIf="person.deathPlace" class="detail-item">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+        </svg>
+        {{ person.deathPlace }}
+      </p>
+    </div>
+
+    <!-- Parents -->
+    <div class="detail-section" *ngIf="parents.length > 0">
+      <h3>Parents</h3>
+      <div class="person-link" *ngFor="let parent of parents" (click)="onNavigate(parent)">
+        <span class="link-indicator" [class.male]="parent.sex === 'M'" [class.female]="parent.sex === 'F'"></span>
+        <span>{{ treeDataService.getDisplayName(parent) }}</span>
+        <span class="link-lifespan">{{ treeDataService.getLifespan(parent) }}</span>
+      </div>
+    </div>
+
+    <!-- Spouses -->
+    <div class="detail-section" *ngIf="spouses.length > 0">
+      <h3>{{ spouses.length === 1 ? 'Spouse' : 'Spouses' }}</h3>
+      <div *ngFor="let s of spouses">
+        <div class="person-link" (click)="onNavigate(s.spouse)">
+          <span class="link-indicator" [class.male]="s.spouse.sex === 'M'" [class.female]="s.spouse.sex === 'F'"></span>
+          <span>{{ treeDataService.getDisplayName(s.spouse) }}</span>
+          <span class="link-lifespan">{{ treeDataService.getLifespan(s.spouse) }}</span>
+        </div>
+        <p class="marriage-info" *ngIf="s.marriageDate">
+          Married: {{ s.marriageDate }}
+          <span *ngIf="s.marriagePlace"> in {{ s.marriagePlace }}</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Children -->
+    <div class="detail-section" *ngIf="children.length > 0">
+      <h3>Children</h3>
+      <div class="person-link" *ngFor="let child of children" (click)="onNavigate(child)">
+        <span class="link-indicator" [class.male]="child.sex === 'M'" [class.female]="child.sex === 'F'"></span>
+        <span>{{ treeDataService.getDisplayName(child) }}</span>
+        <span class="link-lifespan">{{ treeDataService.getLifespan(child) }}</span>
+      </div>
+    </div>
+
+    <!-- Siblings -->
+    <div class="detail-section" *ngIf="siblings.length > 0">
+      <h3>Siblings</h3>
+      <div class="person-link" *ngFor="let sib of siblings" (click)="onNavigate(sib)">
+        <span class="link-indicator" [class.male]="sib.sex === 'M'" [class.female]="sib.sex === 'F'"></span>
+        <span>{{ treeDataService.getDisplayName(sib) }}</span>
+        <span class="link-lifespan">{{ treeDataService.getLifespan(sib) }}</span>
+      </div>
+    </div>
+  </div>
+</div>
