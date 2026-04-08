@@ -16,4 +16,12 @@ export class GedcomService {
     formData.append('file', file, file.name);
     return this.http.post<FamilyTreeData>(`${this.apiUrl}/upload`, formData);
   }
+
+  getCurrent(): Observable<FamilyTreeData> {
+    return this.http.get<FamilyTreeData>(`${this.apiUrl}/current`);
+  }
+
+  clear(): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/current`);
+  }
 }

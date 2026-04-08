@@ -8,10 +8,12 @@ namespace FamilyTreeApi.Controllers;
 public class GedcomController : ControllerBase
 {
     private readonly IGedcomParserService _parserService;
+    private readonly IGedcomStoreService _store;
 
-    public GedcomController(IGedcomParserService parserService)
+    public GedcomController(IGedcomParserService parserService, IGedcomStoreService store)
     {
         _parserService = parserService;
+        _store = store;
     }
 
     [HttpPost("upload")]
@@ -33,11 +35,28 @@ public class GedcomController : ControllerBase
             if (result.Individuals.Count == 0)
                 return BadRequest(new { error = "No individuals found in the GEDCOM file." });
 
+            _store.Store(result);
             return Ok(result);
         }
         catch (Exception ex)
         {
             return BadRequest(new { error = $"Failed to parse GEDCOM file: {ex.Message}" });
         }
+    }
+
+    [HttpGet("current")]
+    public IActionResult GetCurrent()
+    {
+        var data = _store.Get();
+        if (data == null)
+            return NotFound(new { error = "No GEDCOM data loaded." });
+        return Ok(data);
+    }
+
+    [HttpDelete("current")]
+    public IActionResult ClearCurrent()
+    {
+        _store.Clear();
+        return NoContent();
     }
 }

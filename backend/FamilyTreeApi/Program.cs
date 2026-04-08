@@ -5,6 +5,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<FamilyTreeApi.Services.IGedcomParserService, FamilyTreeApi.Services.GedcomParserService>();
+builder.Services.AddSingleton<FamilyTreeApi.Services.IGedcomStoreService, FamilyTreeApi.Services.GedcomStoreService>();
 
 builder.Services.AddCors(options =>
 {

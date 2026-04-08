@@ -23,7 +23,9 @@ interface TreeNode {
 export class PedigreeTreeComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() data!: FamilyTreeData;
   @Input() rootPersonId!: string;
+  @Input() backPath: Individual[] = [];
   @Output() personClicked = new EventEmitter<Individual>();
+  @Output() navigateBack = new EventEmitter<string>();
 
   private svg: any;
   private zoomGroup: any;
@@ -48,7 +50,7 @@ export class PedigreeTreeComponent implements AfterViewInit, OnChanges, OnDestro
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (this.svg && (changes['rootPersonId'] || changes['data'])) {
+    if (this.svg && (changes['rootPersonId'] || changes['data'] || changes['backPath'])) {
       this.render();
     }
   }
@@ -205,6 +207,110 @@ export class PedigreeTreeComponent implements AfterViewInit, OnChanges, OnDestro
         .transition().duration(200)
         .attr('filter', 'drop-shadow(0 2px 4px rgba(0,0,0,0.08))');
     });
+
+    // Back-path nodes to the left of root
+    if (this.backPath.length > 0) {
+      const rootNode = root.descendants().find(d => d.depth === 0);
+      if (rootNode && rootNode.x !== undefined && rootNode.y !== undefined) {
+        const rootCardX = rootNode.y + width / 4 - this.CARD_WIDTH / 2;
+        const rootCenterY = rootNode.x + height / 2;
+
+        for (let i = 0; i < this.backPath.length; i++) {
+          const person = this.backPath[i];
+          const nodeX = rootCardX - (i + 1) * this.HORIZONTAL_SPACING;
+          const nodeY = rootCenterY - this.CARD_HEIGHT / 2;
+
+          // Connector line
+          const lineFromX = nodeX + this.CARD_WIDTH;
+          const lineToX = i === 0 ? rootCardX : nodeX + this.HORIZONTAL_SPACING;
+          const lineY = rootCenterY;
+          const mx = (lineFromX + lineToX) / 2;
+          this.zoomGroup.append('path')
+            .attr('d', `M${lineFromX},${lineY} C${mx},${lineY} ${mx},${lineY} ${lineToX},${lineY}`)
+            .attr('fill', 'none')
+            .attr('stroke', '#c8c4bc')
+            .attr('stroke-width', 2);
+
+          // Card group
+          const backNode = this.zoomGroup.append('g')
+            .attr('class', 'back-node')
+            .attr('transform', `translate(${nodeX},${nodeY})`)
+            .style('cursor', 'pointer')
+            .on('click', () => this.navigateBack.emit(person.id));
+
+          // Card background
+          backNode.append('rect')
+            .attr('width', this.CARD_WIDTH)
+            .attr('height', this.CARD_HEIGHT)
+            .attr('rx', 10)
+            .attr('ry', 10)
+            .attr('fill', '#ffffff')
+            .attr('stroke', '#b8d4be')
+            .attr('stroke-width', 1.5)
+            .attr('stroke-dasharray', '6,3')
+            .attr('filter', 'drop-shadow(0 2px 4px rgba(0,0,0,0.08))');
+
+          // Gender indicator bar
+          backNode.append('rect')
+            .attr('width', 4)
+            .attr('height', this.CARD_HEIGHT - 16)
+            .attr('x', 8)
+            .attr('y', 8)
+            .attr('rx', 2)
+            .attr('fill', person.sex === 'M' ? '#4a90d9' : person.sex === 'F' ? '#d94a8e' : '#95a5a6');
+
+          // Name text
+          backNode.append('text')
+            .attr('x', 20)
+            .attr('y', 28)
+            .attr('font-size', '13px')
+            .attr('font-weight', '600')
+            .attr('fill', '#2c3e50')
+            .attr('font-family', "'Inter', sans-serif")
+            .text(this.treeDataService.getDisplayName(person))
+            .each(function(this: SVGTextElement) {
+              const textEl = d3.select(this);
+              if ((this as SVGTextElement).getComputedTextLength() > 148) {
+                let text = textEl.text();
+                while ((this as SVGTextElement).getComputedTextLength() > 140 && text.length > 0) {
+                  text = text.slice(0, -1);
+                  textEl.text(text + '...');
+                }
+              }
+            });
+
+          // Lifespan text
+          backNode.append('text')
+            .attr('x', 20)
+            .attr('y', 46)
+            .attr('font-size', '11px')
+            .attr('fill', '#7f8c8d')
+            .attr('font-family', "'Inter', sans-serif")
+            .text(this.treeDataService.getLifespan(person));
+
+          // Generation label
+          backNode.append('text')
+            .attr('x', 20)
+            .attr('y', 62)
+            .attr('font-size', '9px')
+            .attr('fill', '#bdc3c7')
+            .attr('font-family', "'Inter', sans-serif")
+            .text('Descendant');
+
+          // Hover effects
+          backNode.on('mouseenter', function(this: SVGGElement) {
+            d3.select(this).select('rect:first-child')
+              .transition().duration(200)
+              .attr('filter', 'drop-shadow(0 4px 12px rgba(0,0,0,0.15))');
+          }).on('mouseleave', function(this: SVGGElement) {
+            d3.select(this).select('rect:first-child')
+              .transition().duration(200)
+              .attr('filter', 'drop-shadow(0 2px 4px rgba(0,0,0,0.08))');
+          });
+        }
+
+      }
+    }
   }
 
   private convertToHierarchy(node: AncestorNode): TreeNode {

@@ -4,6 +4,7 @@
   <app-family-tree-viewer
     [data]="familyData"
     (personSelected)="onPersonSelected($event)"
+    (cleared)="onGedcomCleared()"
   />
 
   @if (selectedPerson) {

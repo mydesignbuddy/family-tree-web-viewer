@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet run:*)",
+      "Bash(npx ng:*)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5036/swagger/index.html)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:4200)",
+      "Bash(pkill -f \"ng serve\")"
+    ]
+  }
+}
