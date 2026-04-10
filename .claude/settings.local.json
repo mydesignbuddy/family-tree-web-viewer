@@ -5,7 +5,29 @@
       "Bash(npx ng:*)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5036/swagger/index.html)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:4200)",
-      "Bash(pkill -f \"ng serve\")"
+      "Bash(pkill -f \"ng serve\")",
+      "Bash(dotnet build:*)",
+      "Bash(ls -d FTDNA.Services.Forensic.FamilyTreeViewer.*/)",
+      "WebSearch",
+      "WebFetch(domain:www.wikitree.com)",
+      "WebFetch(domain:github.com)",
+      "Bash(ls backend/FTDNA.Services.FamilyTreeV3.*/)",
+      "Bash(dotnet new:*)",
+      "Bash(dotnet sln:*)",
+      "Bash(dotnet add:*)",
+      "Bash(rm FTDNA.Services.FamilyTreeV3.Data.External/Class1.cs)",
+      "Bash(mkdir -p FTDNA.Services.FamilyTreeV3.Data.External/Services)",
+      "Bash(ls backend/*.sln)",
+      "Bash(ls *.sln)",
+      "Bash(DOTNET_CLI_TELEMETRY_OPTOUT=1 dotnet build FTDNA.Services.FamilyTreeV3.sln)",
+      "Bash(DOTNET_CLI_TELEMETRY_OPTOUT=1 dotnet build FTDNA.Services.FamilyTreeV3.sln --no-restore)",
+      "Bash(DOTNET_CLI_TELEMETRY_OPTOUT=1 dotnet build FTDNA.Services.FamilyTreeV3.Domain/FTDNA.Services.FamilyTreeV3.Domain.csproj --no-restore)",
+      "Bash(tasklist)",
+      "Bash(npm start:*)"
     ]
-  }
+  },
+  "enabledMcpjsonServers": [
+    "teamcity-mcp-server",
+    "octopus-deploy-mcp-server"
+  ]
 }
