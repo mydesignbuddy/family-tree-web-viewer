@@ -1,0 +1,34 @@
+[
+  {
+    "label": "backend: build",
+    "command": "dotnet build backend/FTDNA.Services.FamilyTreeV3.sln",
+    "use_new_terminal": false,
+    "tags": ["build"]
+  },
+  {
+    "label": "backend: run",
+    "command": "dotnet run --project backend/FTDNA.Services.FamilyTreeV3.Api",
+    "env": {
+      "ASPNETCORE_ENVIRONMENT": "Development",
+      "ASPNETCORE_URLS": "http://localhost:5036"
+    },
+    "use_new_terminal": true,
+    "tags": ["run"]
+  },
+  {
+    "label": "frontend: npm install",
+    "command": "cd frontend/family-tree-app && npm install",
+    "use_new_terminal": false
+  },
+  {
+    "label": "frontend: serve",
+    "command": "cd frontend/family-tree-app && npx ng serve --proxy-config proxy.conf.json",
+    "use_new_terminal": true,
+    "tags": ["run"]
+  },
+  {
+    "label": "full stack: start",
+    "command": "echo 'Use task runner to launch backend: run and frontend: serve separately'",
+    "use_new_terminal": false
+  }
+]

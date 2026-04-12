@@ -1,0 +1,15 @@
+[
+  {
+    "label": "Backend (.NET)",
+    "adapter": "netcoredbg",
+    "request": "launch",
+    "program": "${workspaceFolder}/backend/FTDNA.Services.FamilyTreeV3.Api/bin/Debug/net8.0/FTDNA.Services.FamilyTreeV3.Api.dll",
+    "cwd": "${workspaceFolder}/backend/FTDNA.Services.FamilyTreeV3.Api",
+    "env": {
+      "ASPNETCORE_ENVIRONMENT": "Development",
+      "ASPNETCORE_URLS": "http://localhost:5036"
+    },
+    "stop_at_entry": false,
+    "pre_launch_task": "backend: build"
+  }
+]

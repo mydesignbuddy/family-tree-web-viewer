@@ -1,0 +1,272 @@
+<div class="mgmt-container">
+  <!-- Dark Header Bar -->
+  <mat-toolbar color="primary" class="app-header">
+    <span class="app-brand">myFamilyTree</span>
+    <span class="spacer"></span>
+    @if (homePerson !== 'None') {
+      <div class="app-user">
+        <mat-icon>account_circle</mat-icon>
+        <span class="user-name">{{ homePerson }}</span>
+      </div>
+    }
+  </mat-toolbar>
+
+  <!-- Tab Bar -->
+  <mat-toolbar class="tab-bar">
+    <div class="tab-bar-left">
+      @if (dataStore.data) {
+        <button mat-button (click)="goBack()">
+          <mat-icon>arrow_back</mat-icon>
+          <span>Back to Tree</span>
+        </button>
+      }
+    </div>
+    <span class="spacer"></span>
+    <div class="tab-bar-right">
+      <button mat-button class="active">
+        <mat-icon>settings</mat-icon>
+        <span>Tree Mgmt</span>
+      </button>
+    </div>
+  </mat-toolbar>
+
+  <!-- Content -->
+  <div class="mgmt-content">
+    <div class="mgmt-inner">
+      <h1>Tree Management</h1>
+
+      <!-- Messages -->
+      @if (errorMessage) {
+        <div class="message error-msg">
+          <mat-icon>error_outline</mat-icon>
+          {{ errorMessage }}
+        </div>
+      }
+      @if (successMessage) {
+        <div class="message success-msg">
+          <mat-icon>check_circle</mat-icon>
+          {{ successMessage }}
+        </div>
+      }
+
+      <!-- Loaded Trees -->
+      @if (trees.length > 0) {
+        <mat-card class="mgmt-card">
+          <mat-card-content>
+            <h2>Loaded Trees</h2>
+            <p class="section-description">Select a tree to view, or delete trees you no longer need.</p>
+
+            <div class="tree-selector">
+              <mat-form-field appearance="outline" class="tree-select-field">
+                <mat-label>Active Tree</mat-label>
+                <mat-select [value]="activeTreeId" (selectionChange)="onTreeSelected($event.value)">
+                  @for (tree of trees; track tree.id) {
+                    <mat-option [value]="tree.id">
+                      {{ tree.name }} ({{ tree.source }})
+                    </mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              @if (activeTreeId) {
+                <button mat-flat-button color="primary" (click)="goBack()" [disabled]="!dataStore.data">
+                  <mat-icon>visibility</mat-icon>
+                  View Tree
+                </button>
+              }
+            </div>
+
+            <!-- Tree list with details -->
+            <div class="tree-list">
+              @for (tree of trees; track tree.id) {
+                <div class="tree-item" [class.active]="tree.id === activeTreeId">
+                  <div class="tree-item-icon">
+                    <mat-icon>{{ sourceIcon(tree.source) }}</mat-icon>
+                  </div>
+                  <div class="tree-item-info">
+                    <span class="tree-item-name">{{ tree.name }}</span>
+                    <span class="tree-item-meta">
+                      {{ tree.source }} &middot;
+                      {{ tree.individualCount }} individuals &middot;
+                      {{ tree.familyCount }} families
+                    </span>
+                    @if (tree.rootPersonName) {
+                      <span class="tree-item-meta">Home: {{ tree.rootPersonName }}</span>
+                    }
+                  </div>
+                  <div class="tree-item-actions">
+                    @if (tree.id !== activeTreeId) {
+                      <button mat-stroked-button class="sm-btn" (click)="onTreeSelected(tree.id)">
+                        Switch
+                      </button>
+                    } @else {
+                      <span class="active-badge">Active</span>
+                    }
+                    <button mat-icon-button color="warn" matTooltip="Delete this tree" (click)="onDeleteTree(tree.id)">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+          </mat-card-content>
+        </mat-card>
+      }
+
+      <!-- Tree Information (active tree) -->
+      @if (activeTree) {
+        <mat-card class="mgmt-card">
+          <mat-card-content>
+            <div class="card-row">
+              <div class="card-section">
+                <h2>Tree Information</h2>
+                <div class="info-row">
+                  <span class="info-label">Tree Name</span>
+                  <span class="info-value">{{ treeName }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Source</span>
+                  <span class="info-value">{{ activeTree.source }}</span>
+                </div>
+              </div>
+              <div class="card-section">
+                <h2>Home Person</h2>
+                <div class="home-person">
+                  <mat-icon class="person-avatar">account_circle</mat-icon>
+                  <span>{{ homePerson }}</span>
+                </div>
+              </div>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <h2>Summary</h2>
+            <p class="summary-text">
+              <strong>{{ individualCount }}</strong> Individuals,
+              <strong>{{ familyCount }}</strong> Families
+            </p>
+          </mat-card-content>
+        </mat-card>
+      }
+
+      <!-- Import Sources -->
+      <mat-card class="mgmt-card">
+        <mat-card-content>
+          <h2>Import Data Source</h2>
+          <p class="section-description">Load a family tree from a GEDCOM file or WikiTree. Multiple trees can be loaded at once.</p>
+
+          <!-- GEDCOM Upload -->
+          <div class="source-section">
+            <div class="source-header">
+              <mat-icon>upload_file</mat-icon>
+              <div>
+                <h3>GEDCOM File Upload</h3>
+                <p>Upload a .ged file from your computer</p>
+              </div>
+            </div>
+            <div class="source-actions">
+              @if (isUploading) {
+                <mat-spinner diameter="24"></mat-spinner>
+                <span>Uploading...</span>
+              } @else {
+                <button mat-flat-button color="primary" (click)="fileInput.click()">
+                  <mat-icon>folder_open</mat-icon>
+                  Choose File
+                </button>
+                <input #fileInput type="file" accept=".ged" (change)="onFileSelected($event)" hidden />
+              }
+            </div>
+          </div>
+
+          <mat-divider></mat-divider>
+
+          <!-- WikiTree Authenticated -->
+          <div class="source-section">
+            <div class="source-header">
+              <mat-icon>lock_open</mat-icon>
+              <div>
+                <h3>WikiTree (Private Access)</h3>
+                <p>Sign in to WikiTree to access your full tree including private profiles</p>
+              </div>
+            </div>
+            <div class="source-actions">
+              @if (wikiTreeUser) {
+                <div class="auth-status connected">
+                  <mat-icon>check_circle</mat-icon>
+                  <span>Connected as <strong>{{ wikiTreeUser.userName }}</strong></span>
+                </div>
+                <div class="action-row">
+                  <button mat-flat-button color="primary" (click)="importAuthenticated()" [disabled]="isImporting">
+                    @if (isImporting) {
+                      <mat-spinner diameter="18"></mat-spinner>
+                    } @else {
+                      <mat-icon>download</mat-icon>
+                    }
+                    Load My Tree
+                  </button>
+                  <button mat-stroked-button (click)="logoutFromWikiTree()">Disconnect</button>
+                </div>
+              } @else {
+                <button mat-flat-button color="primary" (click)="loginToWikiTree()">
+                  <mat-icon>login</mat-icon>
+                  Connect to WikiTree
+                </button>
+              }
+            </div>
+          </div>
+
+          <mat-divider></mat-divider>
+
+          <!-- WikiTree Public -->
+          <div class="source-section">
+            <div class="source-header">
+              <mat-icon>public</mat-icon>
+              <div>
+                <h3>WikiTree (Public)</h3>
+                <p>Load any public WikiTree profile by ID — no login required</p>
+              </div>
+            </div>
+            <div class="source-actions wikitree-public">
+              <mat-form-field appearance="outline" class="wt-field">
+                <mat-label>WikiTree ID</mat-label>
+                <input matInput [(ngModel)]="wikiTreeId" placeholder="e.g. Churchill-4" (keyup.enter)="importPublic()" />
+                <mat-hint>e.g. LastName-Number</mat-hint>
+              </mat-form-field>
+              <div class="depth-row">
+                <mat-form-field appearance="outline" class="depth-field">
+                  <mat-label>Ancestors</mat-label>
+                  <input matInput type="number" [(ngModel)]="ancestorDepth" min="1" max="10" />
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="depth-field">
+                  <mat-label>Descendants</mat-label>
+                  <input matInput type="number" [(ngModel)]="descendantDepth" min="1" max="10" />
+                </mat-form-field>
+              </div>
+              <button mat-flat-button color="primary" (click)="importPublic()" [disabled]="!wikiTreeId.trim() || isImporting">
+                @if (isImporting) {
+                  <mat-spinner diameter="18"></mat-spinner>
+                } @else {
+                  <mat-icon>download</mat-icon>
+                }
+                Import
+              </button>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Clear All -->
+      @if (trees.length > 0) {
+        <mat-card class="mgmt-card danger-card">
+          <mat-card-content>
+            <h2>Clear All Trees</h2>
+            <p>This will remove all loaded tree data from memory.</p>
+            <button mat-flat-button color="warn" (click)="deleteAllTrees()">
+              <mat-icon>delete_forever</mat-icon>
+              Clear All Trees
+            </button>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+  </div>
+</div>
